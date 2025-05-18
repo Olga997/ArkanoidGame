@@ -1,21 +1,19 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "GameStateData.h"
 #include <vector>
 
 namespace ArkanoidGame
 {
 	class Game;
 
-	class GameStateRecordsData
+	class GameStateRecordsData : public GameStateData
 	{
 	public:
-		~GameStateRecordsData()=default;
-
-		void Init();
-		void Shutdown();
-		void HandleWindowEvent(const sf::Event& event);
-		void Update(float timeDelta);
-		void Draw(sf::RenderWindow& window);
+		void Init()override;
+		void HandleWindowEvent(const sf::Event& event)override;
+		void Update(float timeDelta)override;
+		void Draw(sf::RenderWindow& window)override;
 
 	private:
 		// Resources

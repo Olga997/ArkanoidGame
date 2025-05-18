@@ -7,6 +7,7 @@
 #include "GameStateMainMenu.h"
 #include "GameStateRecords.h"
 
+
 namespace ArkanoidGame
 {
 	Game::Game()

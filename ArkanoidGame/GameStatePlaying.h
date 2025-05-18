@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "SFML/Audio.hpp"
+#include "GameStateData.h"
 #include "Platform.h"
 #include "Ball.h"
 
@@ -8,26 +9,25 @@
 namespace ArkanoidGame
 {
 	class Game;
+	class Block;
 
-	class GameStatePlayingData
+	class GameStatePlayingData : public GameStateData
 	{
 	public:
-		~GameStatePlayingData()=default;
-
-		void Init();
-		void Shutdown();
-		void HandleWindowEvent( const sf::Event& event);
-		void Update(float timeDelta);
-		void Draw(sf::RenderWindow& window);
+		void Init() override;
+		void HandleWindowEvent( const sf::Event& event) override;
+		void Update(float timeDelta) override;
+		void Draw(sf::RenderWindow& window) override;
 
 	private:
+		void createBlocks();
 		// Resources
 		sf::Font font;
 		sf::SoundBuffer gameOverSoundBuffer;
 
 		// Game data
-		Platform platform;
-		Ball ball;
+		std::vector<std::shared_ptr<GameObject>> gameObjects;
+		std::vector<std::shared_ptr<Block>> blocks;
 
 		// UI data
 		sf::Text scoreText;

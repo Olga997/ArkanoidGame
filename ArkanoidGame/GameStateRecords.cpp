@@ -46,10 +46,6 @@ namespace ArkanoidGame
 		hintText.setFillColor(sf::Color::White);
 		hintText.setCharacterSize(24);
 	}
-	void GameStateRecordsData::Shutdown()
-	{
-		
-	}
 
 	void GameStateRecordsData::HandleWindowEvent(const sf::Event& event)
 	{

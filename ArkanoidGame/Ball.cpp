@@ -3,22 +3,12 @@
 #include "Sprite.h"
 #include <assert.h>
 
-namespace
-{
-	// id textures
-	const std::string TEXTURE_ID = "ball";
-}
-
 namespace ArkanoidGame
 {
-	void Ball::Init()
+	Ball::Ball(const sf::Vector2f& position)
+		: GameObject(TEXTURES_PATH + "ball.png", position, BALL_SIZE, BALL_SIZE)
 	{
-		assert(texture.loadFromFile(TEXTURES_PATH + "ball.png"));
-
-		InitSprite(sprite, BALL_SIZE, BALL_SIZE, texture);
-		sprite.setPosition({ SCREEN_WIDTH / 2.0, SCREEN_HEIGHT - PLATFORM_HEIGHT - BALL_SIZE / 2.f });
-
-		const float angle = 45.f + rand() % 90; // [45, 135] degree
+		const float angle = 45.f + rand() % 90; 
 		const auto pi = std::acos(-1.f);
 		direction.x = std::cos(pi / 180.f * angle);
 		direction.y = std::sin(pi / 180.f * angle);
@@ -37,13 +27,7 @@ namespace ArkanoidGame
 			direction.y *= -1;
 		}
 	}
-
-	void Ball::Draw(sf::RenderWindow& window)
-	{
-		DrawSprite(sprite, window);
-	}
-
-	void Ball::ReboundFromPlatform()
+	void Ball::ReboundFrom()
 	{
 		direction.y *= -1;
 	}

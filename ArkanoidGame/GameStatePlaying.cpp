@@ -1,5 +1,6 @@
 #include "GameStatePlaying.h"
 #include "Application.h"
+#include "Block.h"
 #include "Game.h"
 #include "Text.h"
 #include <assert.h>
@@ -28,9 +29,10 @@ namespace ArkanoidGame
 		inputHintText.setString("Use arrow keys to move, ESC to pause");
 		inputHintText.setOrigin(GetTextOrigin(inputHintText, { 1.f, 0.f }));
 
-		platform.Init();
-		ball.Init();
-
+		gameObjects.emplace_back(std::make_shared<Platform>(sf::Vector2f({ SCREEN_WIDTH / 2.0, SCREEN_HEIGHT - PLATFORM_HEIGHT / 2.f })));
+		gameObjects.emplace_back(std::make_shared<Ball>(sf::Vector2f({ SCREEN_WIDTH / 2.f, SCREEN_HEIGHT - PLATFORM_HEIGHT - BALL_SIZE / 2.f })));
+		createBlocks();
+		
 		// Init sounds
 		gameOverSound.setBuffer(gameOverSoundBuffer);
 	}
@@ -48,23 +50,47 @@ namespace ArkanoidGame
 
 	void GameStatePlayingData::Update(float timeDelta)
 	{
-		platform.Update(timeDelta);
-		ball.Update(timeDelta);
+		static auto updateFunctor = [timeDelta](auto obj) { obj->Update(timeDelta); };
 
-		const bool isCollision = platform.CheckCollisionWithBall(ball);
-		if (isCollision) 
+		std::for_each(gameObjects.begin(), gameObjects.end(), updateFunctor);
+		std::for_each(blocks.begin(), blocks.end(), updateFunctor);
+
+
+		std::shared_ptr <Platform> platform = std::dynamic_pointer_cast<Platform>(gameObjects[0]);
+		std::shared_ptr<Ball> ball = std::dynamic_pointer_cast<Ball>(gameObjects[1]);
+
+		const bool isCollision = platform->CheckCollisionWithBall(*ball);
+		if (isCollision)
 		{
-			ball.ReboundFromPlatform();
+			ball->ReboundFrom();
 		}
 
-		const bool isGameFinished = !isCollision && ball.GetPosition().y > platform.GetRect().top;
+		bool hasBrokeOneBlock = false;
 
-		if (isGameFinished)
+		blocks.erase(std::remove_if(blocks.begin(), blocks.end(),[ball,&hasBrokeOneBlock, this](auto block)
+		{
+			if ((!hasBrokeOneBlock) && block->CheckCollisionWithBall(*ball)) 
+			{
+				hasBrokeOneBlock = true;
+				ball->ReboundFrom();
+				block->OnHit();
+			}
+			return block->IsBroken();
+		}),
+			blocks.end()
+		);
+
+		const bool isGameWin = blocks.size() == 0;
+		const bool isGameOver = !isCollision && ball->GetPosition().y > platform->GetRect().top;
+		Game& game = Application::Instance().GetGame();
+
+		if (isGameWin) 
+		{
+			game.PushState(GameStateType::GameOver, false);
+		}
+		else if (isGameOver) 
 		{
 			gameOverSound.play();
-
-			Game& game = Application::Instance().GetGame();
-
 			game.PushState(GameStateType::GameOver, false);
 		}
 	}
@@ -74,8 +100,10 @@ namespace ArkanoidGame
 		// Draw background
 		window.draw(background);
 
-		platform.Draw(window);
-		ball.Draw(window);
+		static auto drawFunc = [&window](auto block) { block->Draw(window); };
+	
+		std::for_each(gameObjects.begin(), gameObjects.end(), drawFunc);
+		std::for_each(blocks.begin(), blocks.end(), drawFunc);
 
 		scoreText.setOrigin(GetTextOrigin(scoreText, { 0.f, 0.f }));
 		scoreText.setPosition(10.f, 10.f);
@@ -84,5 +112,15 @@ namespace ArkanoidGame
 		sf::Vector2f viewSize = window.getView().getSize();
 		inputHintText.setPosition(viewSize.x - 10.f, 10.f);
 		window.draw(inputHintText);
+	}
+	void GameStatePlayingData::createBlocks()
+	{
+		for (int row = 0; row < BLOCKS_COUNT_ROWS; ++row) 
+		{
+			for (int col = 0; col < BLOCKS_COUNT_IN_ROW; ++col)
+			{
+				blocks.emplace_back(std::make_shared<Block>(sf::Vector2f({ BLOCK_SHIFT + BLOCK_WIDTH / 2.f + col * (BLOCK_WIDTH + BLOCK_SHIFT), 100.f + row * BLOCK_HEIGHT })));
+			}
+		}
 	}
 }

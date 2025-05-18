@@ -35,8 +35,6 @@ namespace ArkanoidGame
 
 			if (game.Update(TIME_PER_FRAME))
 			{
-				// Draw everything here
-				// Clear the window first
 				window.clear();
 
 				game.Draw(window);

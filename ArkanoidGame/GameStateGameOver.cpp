@@ -74,10 +74,6 @@ namespace ArkanoidGame
 		hintText.setFillColor(sf::Color::White);
 		hintText.setString("Press Space to restart\nEsc to exit to main menu");
 	}
-	void GameStateGameOverData::Shutdown()
-	{
-		// We dont need to free resources here, because they will be freed automatically
-	}
 
 	void GameStateGameOverData::HandleWindowEvent(const sf::Event& event)
 	{

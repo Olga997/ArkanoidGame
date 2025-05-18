@@ -52,6 +52,18 @@
     <ClCompile Include="Ball.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateData.cpp">
+      <Filter>Sources\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="Block.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateGameWin.cpp">
+      <Filter>Sources\GameStates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -98,6 +110,18 @@
     </ClInclude>
     <ClInclude Include="Ball.h">
       <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateData.h">
+      <Filter>Sources\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateGameWin.h">
+      <Filter>Sources\GameStates</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
