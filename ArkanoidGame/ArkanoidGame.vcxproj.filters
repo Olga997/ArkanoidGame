@@ -64,6 +64,9 @@
     <ClCompile Include="GameStateGameWin.cpp">
       <Filter>Sources\GameStates</Filter>
     </ClCompile>
+    <ClCompile Include="IDelayedAction.h">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -122,6 +125,12 @@
     </ClInclude>
     <ClInclude Include="GameStateGameWin.h">
       <Filter>Sources\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="Collidable.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="randomizer.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

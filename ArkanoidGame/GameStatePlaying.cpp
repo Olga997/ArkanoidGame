@@ -59,26 +59,36 @@ namespace ArkanoidGame
 		std::shared_ptr <Platform> platform = std::dynamic_pointer_cast<Platform>(gameObjects[0]);
 		std::shared_ptr<Ball> ball = std::dynamic_pointer_cast<Ball>(gameObjects[1]);
 
-		const bool isCollision = platform->CheckCollisionWithBall(*ball);
-		if (isCollision)
-		{
-			ball->ReboundFrom();
-		}
+		const bool isCollision = platform->CheckCollision(ball);
+
+
+		bool needInverseDirX = false;
+		bool needInverseDirY = false;
+
 
 		bool hasBrokeOneBlock = false;
-
-		blocks.erase(std::remove_if(blocks.begin(), blocks.end(),[ball,&hasBrokeOneBlock, this](auto block)
+		//remove-erase idiom
+		blocks.erase(
+			std::remove_if(blocks.begin(), blocks.end(),
+				[ball, &hasBrokeOneBlock, &needInverseDirX, &needInverseDirY, this](auto block)
 		{
-			if ((!hasBrokeOneBlock) && block->CheckCollisionWithBall(*ball)) 
-			{
+			if ((!hasBrokeOneBlock) && block->CheckCollision(ball)) {
 				hasBrokeOneBlock = true;
-				ball->ReboundFrom();
-				block->OnHit();
+				const auto ballPos = ball->GetPosition();
+				const auto blockRect = block->GetRect();
+
+				GetBallInverse(ballPos, blockRect, needInverseDirX, needInverseDirY);
 			}
 			return block->IsBroken();
 		}),
 			blocks.end()
 		);
+		if (needInverseDirX) {
+			ball->InvertDirectionX();
+		}
+		if (needInverseDirY) {
+			ball->InvertDirectionY();
+		}
 
 		const bool isGameWin = blocks.size() == 0;
 		const bool isGameOver = !isCollision && ball->GetPosition().y > platform->GetRect().top;
@@ -115,12 +125,37 @@ namespace ArkanoidGame
 	}
 	void GameStatePlayingData::createBlocks()
 	{
-		for (int row = 0; row < BLOCKS_COUNT_ROWS; ++row) 
+		int row = 0;
+		for (; row < BLOCKS_COUNT_ROWS; ++row)
 		{
-			for (int col = 0; col < BLOCKS_COUNT_IN_ROW; ++col)
+			for (int col = 0; col < BLOCKS_COUNT_IN_ROW; ++col) 
 			{
-				blocks.emplace_back(std::make_shared<Block>(sf::Vector2f({ BLOCK_SHIFT + BLOCK_WIDTH / 2.f + col * (BLOCK_WIDTH + BLOCK_SHIFT), 100.f + row * BLOCK_HEIGHT })));
+				blocks.emplace_back(std::make_shared<SmoothDestroyableBlock>(sf::Vector2f({ BLOCK_SHIFT + BLOCK_WIDTH / 2.f + col * (BLOCK_WIDTH + BLOCK_SHIFT), 100.f + row * BLOCK_HEIGHT })));
 			}
+		}
+
+		for (int col = 0; col < 3; ++col) 
+		{
+			blocks.emplace_back(std::make_shared<UnbreackableBlock>(sf::Vector2f({ BLOCK_SHIFT + BLOCK_WIDTH / 2.f + col * (BLOCK_WIDTH + BLOCK_SHIFT), 100.f + row * BLOCK_HEIGHT })));
+		}
+		for (int col = 9; col < 15; ++col) 
+		{
+			blocks.emplace_back(std::make_shared<TwoHitBlock>(sf::Vector2f({ BLOCK_SHIFT + BLOCK_WIDTH / 2.f + col * (BLOCK_WIDTH + BLOCK_SHIFT), 100.f + row * BLOCK_HEIGHT })));
+		}
+	}
+	void GameStatePlayingData::GetBallInverse(const sf::Vector2f& ballPos, const sf::FloatRect& blockRect, bool& needInverseDirX, bool& needInverseDirY) {
+
+		if (ballPos.y > blockRect.top + blockRect.height)
+		{
+			needInverseDirY = true;
+		}
+		if (ballPos.x < blockRect.left)
+		{
+			needInverseDirX = true;
+		}
+		if (ballPos.x > blockRect.left + blockRect.width)
+		{
+			needInverseDirX = true;
 		}
 	}
 }

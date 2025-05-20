@@ -21,6 +21,8 @@ namespace ArkanoidGame
 
 	private:
 		void createBlocks();
+		void GetBallInverse(const sf::Vector2f& ballPos, const sf::FloatRect& blockRect, bool& needInverseDirX,
+			bool& needInverseDirY);
 		// Resources
 		sf::Font font;
 		sf::SoundBuffer gameOverSoundBuffer;
