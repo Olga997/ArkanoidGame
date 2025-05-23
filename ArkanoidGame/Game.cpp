@@ -15,11 +15,11 @@ namespace ArkanoidGame
 		// Generate fake records table
 		recordsTable =
 		{
-			{"John", MAX_APPLES / 2},
-			{"Jane", MAX_APPLES / 3 },
-			{"Alice", MAX_APPLES / 4 },
-			{"Bob", MAX_APPLES / 5 },
-			{"Clementine", MAX_APPLES / 5 },
+			{"John", SETTINGS.MAX_SCORE / 2},
+			{"Jane", SETTINGS.MAX_SCORE / 3 },
+			{"Alice", SETTINGS.MAX_SCORE / 4 },
+			{"Bob", SETTINGS.MAX_SCORE / 5 },
+			{"Clementine", SETTINGS.MAX_SCORE / 5 },
 		};
 
 		stateChangeType = GameStateChangeType::None;
@@ -169,5 +169,63 @@ namespace ArkanoidGame
 	void Game::UpdateRecord(const std::string& playerId, int score)
 	{
 		recordsTable[playerId] = std::max(recordsTable[playerId], score);
+	}
+	void Game::ExitGame()
+	{
+		SwitchStateTo(GameStateType::MainMenu);
+	}
+	void Game::ShowRecords()
+	{
+		PushState(GameStateType::Records, true);
+	}
+
+	void Game::QuitGame() {
+		SwitchStateTo(GameStateType::None);
+	}
+
+	void Game::StartGame()
+	{
+		SwitchStateTo(GameStateType::Playing);
+	}
+
+	void Game::PauseGame()
+	{
+		PushState(GameStateType::ExitDialog, false);
+	}
+
+	void Game::WinGame()
+	{
+		PushState(GameStateType::GameWin, false);
+	}
+
+	void Game::LooseGame()
+	{
+		PushState(GameStateType::GameOver, false);
+	}
+	void Game::UpdateGame(float timeDelta, sf::RenderWindow& window)
+	{
+		HandleWindowEvents(window);
+		if (Update(timeDelta))
+		{
+			// Draw everything here
+			// Clear the window first
+			window.clear();
+
+			Draw(window);
+
+			// End the current frame, display window contents on screen
+			window.display();
+		}
+		else
+		{
+			window.close();
+		}
+	}
+
+	void Game::LoadNextLevel()
+	{
+		assert(stateStack.back().GetType() == GameStateType::Playing);
+		auto playingData = (stateStack.back().GetData<GameStatePlayingData>());
+		playingData->LoadNextLevel();
 	}
 }

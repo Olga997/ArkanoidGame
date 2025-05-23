@@ -2,11 +2,12 @@
 #include "SFML/Graphics.hpp"
 #include "GameObject.h"
 #include "Collidable.h"
+#include "IObserver.h"
 
 
 namespace ArkanoidGame
 {
-	class Ball : public GameObject, public Collidable
+	class Ball : public GameObject, public Collidable, public IObservable
 	{
 	public:
 		Ball(const sf::Vector2f& position);
@@ -19,6 +20,7 @@ namespace ArkanoidGame
 
 		bool GetCollision(std::shared_ptr<Collidable> collidable) const  override;
 		void ChangeAngle(float x);
+		void restart() override;
 
 	private:
 		

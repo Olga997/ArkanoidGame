@@ -2,14 +2,12 @@
 #include "Sprite.h"
 #include "GameSettings.h"
 #include <assert.h>
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
+
 
 namespace ArkanoidGame
 {
 	Block::Block(const sf::Vector2f& position, const sf::Color& color)
-		: GameObject(TEXTURES_PATH + "block.png", position, BLOCK_WIDTH, BLOCK_HEIGHT)
+		: GameObject(SETTINGS.TEXTURES_PATH + "block.png", position, SETTINGS.BLOCK_WIDTH, SETTINGS.BLOCK_HEIGHT)
 	{
 		sprite.setColor(color);
 	}
@@ -28,6 +26,7 @@ namespace ArkanoidGame
 	void Block::OnHit()
 	{
 		hitCount = 0;
+		Emit();
 	}
 
 	bool Block::IsBroken()
@@ -65,12 +64,13 @@ namespace ArkanoidGame
 
 	void SmoothDestroyableBlock::OnHit()
 	{
-		StartTimer(BREAK_DELAY);
+		StartTimer(SETTINGS.BREAK_DELAY);
 	}
 
 	void SmoothDestroyableBlock::FinalAction()
 	{
 		--hitCount;
+		Emit();
 	}
 
 	void SmoothDestroyableBlock::EachTickAction(float deltaTime)
@@ -101,7 +101,7 @@ namespace ArkanoidGame
 
 		if (hitCount == 0) {
 			hitCount = 1;
-			StartTimer(BREAK_DELAY);
+			StartTimer(SETTINGS.BREAK_DELAY);
 		}
 	}
 

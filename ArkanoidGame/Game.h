@@ -29,27 +29,39 @@ namespace ArkanoidGame
 	class Game
 	{
 	public:
+		void StartGame();
+		void PauseGame();
+		void WinGame();
+		void LooseGame();
+		void UpdateGame(float timeDelta, sf::RenderWindow& window);
+		void ExitGame();
+		void QuitGame();
+		void ShowRecords();
+		void LoadNextLevel();
+
 		using RecordsTable = std::unordered_map<std::string, int>;
 
 		Game();
 		~Game();
 
-		void HandleWindowEvents(sf::RenderWindow& window);
-		bool Update(float timeDelta); // Return false if game should be closed
-		void Draw(sf::RenderWindow& window);
-		void Shutdown();
 
 		bool IsEnableOptions(GameOptions option) const;
 		void SetOption(GameOptions option, bool value);
 
 		const RecordsTable& GetRecordsTable() const { return recordsTable; }
 		int GetRecordByPlayerId(const std::string& playerId) const;
-		void UpdateRecord(const std::string& playerId, int score);
-
-		void PushState(GameStateType stateType, bool isExclusivelyVisible);
 
 		void PopState();
 
+	private:
+		void HandleWindowEvents(sf::RenderWindow& window);
+		bool Update(float timeDelta); // Return false if game should be closed
+		void Draw(sf::RenderWindow& window);
+		void Shutdown();
+
+		void UpdateRecord(const std::string& playerId, int score);
+
+		void PushState(GameStateType newState, bool isExclusivelyVisible);
 		void SwitchStateTo(GameStateType newState);
 
 		

@@ -4,25 +4,32 @@
 #include "GameStateData.h"
 #include "Platform.h"
 #include "Ball.h"
-
+#include "BlockFactory.h"
+#include "LevelLoader.h"
+#include "IObserver.h"
+#include <unordered_map>
 
 namespace ArkanoidGame
 {
 	class Game;
 	class Block;
+	class BlockFactory;
 
-	class GameStatePlayingData : public GameStateData
+	class GameStatePlayingData : public GameStateData,public IObserver,public std::enable_shared_from_this<GameStatePlayingData>
 	{
 	public:
 		void Init() override;
 		void HandleWindowEvent( const sf::Event& event) override;
 		void Update(float timeDelta) override;
 		void Draw(sf::RenderWindow& window) override;
+		void LoadNextLevel();
+		void Notify(std::shared_ptr<IObservable> observable) override;
 
 	private:
 		void createBlocks();
 		void GetBallInverse(const sf::Vector2f& ballPos, const sf::FloatRect& blockRect, bool& needInverseDirX,
 			bool& needInverseDirY);
+
 		// Resources
 		sf::Font font;
 		sf::SoundBuffer gameOverSoundBuffer;
@@ -38,5 +45,13 @@ namespace ArkanoidGame
 
 		// Sounds
 		sf::Sound gameOverSound;
+
+		//Block creator
+		std::unordered_map<BlockType, std::unique_ptr<BlockFactory>> factories;
+		int breackableBlocksCount = 0;
+
+		//Levels
+		LevelLoader levelLoder;
+		int currentLevel = 0;
 	};
 }

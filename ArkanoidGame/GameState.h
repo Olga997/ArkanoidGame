@@ -39,8 +39,9 @@ namespace ArkanoidGame
 		bool IsExclusivelyVisible() const { return isExclusivelyVisible; }
 
 		template<class T>
-		T* GetData() const {
-			return static_cast<T>(data);
+		T* GetData() const 
+		{
+			return static_cast<T*>(data.get());
 		}
 
 		void Update(float timeDelta);
